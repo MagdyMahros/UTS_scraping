@@ -99,3 +99,13 @@ for each_url in course_links_file:
         desc_p = desc_tag.find('p')
         if desc_p:
             course_data['Description'] = desc_p.get_text()
+
+    # COURSE LANGUAGE
+    for language in possible_languages:
+        if language in course_data['Course']:
+            course_data['Course_Lang'] = language
+        else:
+            course_data['Course_Lang'] = 'English'
+    print('COURSE LANGUAGE: ', course_data['Course_Lang'])
+
+
