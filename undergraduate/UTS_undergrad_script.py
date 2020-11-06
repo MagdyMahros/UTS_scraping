@@ -93,3 +93,9 @@ for each_url in course_links_file:
                 course_data['Faculty'] = i
     print('COURSE FACULTY: ', course_data['Faculty'])
 
+    # COURSE DESCRIPTION
+    desc_tag = soup.find('div', class_='js-read-more read-more')
+    if desc_tag:
+        desc_p = desc_tag.find('p')
+        if desc_p:
+            course_data['Description'] = desc_p.get_text()
