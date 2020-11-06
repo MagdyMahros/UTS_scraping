@@ -78,6 +78,7 @@ for each_url in course_links_file:
         title = title_div.find('h1')
         if title:
             course_data['Course'] = title.get_text()
+        print('COURSE TITLE: ', course_data['Course'])
 
     # DECIDE THE LEVEL CODE
     for i in level_key:
@@ -107,5 +108,37 @@ for each_url in course_links_file:
         else:
             course_data['Course_Lang'] = 'English'
     print('COURSE LANGUAGE: ', course_data['Course_Lang'])
+
+    # DURATION & DURATION_TIME / PART-TIME & FULL-TIME
+    duration_tag = soup.find('h4', class_='collapsible__title', text=re.compile('Course duration', re.IGNORECASE))
+    if duration_tag:
+        duration_list = []
+        dura_div = duration_tag.find_next('div', class_='collapsible__content')
+        if dura_div:
+            dura_ps = dura_div.find_all('p')
+            if dura_ps:
+                for element in dura_ps:
+                    duration_list.append(element.get_text().lower())
+                duration_list = ' '.join(duration_list)
+                print(duration_list)
+                if 'full-time' in duration_list:
+                    course_data['Full_Time'] = 'yes'
+                else:
+                    course_data['Full_Time'] = 'no'
+                if 'part-time' in duration_list:
+                    course_data['Part_Time'] = 'yes'
+                else:
+                    course_data['Part_Time'] = 'no'
+                convertedDuration = dura.convert_duration(duration_list)
+                if convertedDuration:
+                    duration_l = list(convertedDuration)
+                    if duration_l[0] == 1 and 'Years' in duration_l[1]:
+                        duration_l[1] = 'Year'
+                    if duration_l[0] == 1 and 'Months' in duration_l[1]:
+                        duration_l[1] = 'Month'
+                    course_data['Duration'] = duration_l[0]
+                    course_data['Duration_Time'] = duration_l[1]
+                    print('COURSE DURATION: ', str(duration_l[0]) + ' / ' + duration_l[1])
+                print('FULL-TIME/PART-TIME: ', course_data['Full_Time'] + ' / ' + course_data['Part_Time'])
 
 
