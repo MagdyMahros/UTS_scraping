@@ -12,7 +12,6 @@ import time
 from pathlib import Path
 from selenium import webdriver
 import bs4 as bs4
-from selenium.webdriver.support.ui import Select
 import os
 import copy
 from CustomMethods import TemplateData
@@ -38,7 +37,7 @@ course_data = {'Level_Code': '', 'University': 'University of Technology Sydney'
                'Course': '', 'Int_Fees': '', 'Local_Fees': '', 'Currency': 'AUD', 'Currency_Time': 'year',
                'Duration': '', 'Duration_Time': '', 'Full_Time': '', 'Part_Time': '', 'Prerequisite_1': '',
                'Prerequisite_2': 'IELTS', 'Prerequisite_3': '', 'Prerequisite_1_grade': '',
-               'Prerequisite_2_grade': '6.0',
+               'Prerequisite_2_grade': '6.5',
                'Prerequisite_3_grade': '', 'Website': '', 'Course_Lang': '', 'Availability': '', 'Description': '',
                'Career_Outcomes': '', 'Online': '', 'Offline': '', 'Distance': '', 'Face_to_Face': '',
                'Blended': '', 'Remarks': ''}
@@ -121,6 +120,12 @@ for each_url in course_links_file:
                     duration_list.append(element.get_text().lower())
                 duration_list = ' '.join(duration_list)
                 print(duration_list)
+                if 'on campus' in duration_list:
+                    course_data['Face_to_Face'] = 'yes'
+                    course_data['Offline'] = 'yes'
+                else:
+                    course_data['Face_to_Face'] = 'no'
+                    course_data['Offline'] = 'no'
                 if 'full-time' in duration_list:
                     course_data['Full_Time'] = 'yes'
                 else:
@@ -140,5 +145,15 @@ for each_url in course_links_file:
                     course_data['Duration_Time'] = duration_l[1]
                     print('COURSE DURATION: ', str(duration_l[0]) + ' / ' + duration_l[1])
                 print('FULL-TIME/PART-TIME: ', course_data['Full_Time'] + ' / ' + course_data['Part_Time'])
+
+    # ATAR
+    atar_tag = soup.find_all('p')
+    if atar_tag:
+        print(atar_tag[1].get_text().strip())
+        atar_n = re.search(r"\d+(?:.\d+)", atar_tag[1].get_text().strip())
+        if atar_n:
+            course_data['Prerequisite_1_grade'] = atar_n.group()
+            course_data['Prerequisite_1'] = 'year 12'
+            print('ATAR: ', str(course_data['Prerequisite_1_grade']) + ' / ' + course_data['Prerequisite_1'])
 
 
